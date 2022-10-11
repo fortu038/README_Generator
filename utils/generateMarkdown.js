@@ -1,6 +1,7 @@
 // Dictionary that stores the full license name as a key and the license shorthand as a value
 const licenseDictionary = {
   "No License" : "N/A",
+  "License is in Project Repo" : "Repo",
   "Academic Free License v3.0" : "afl%203.0",
   "Apache license 2.0" : "apache%202.0",
   "Artistic license 2.0" : "artistic%202.0",
@@ -40,25 +41,20 @@ const licenseDictionary = {
 // TODO: Create a function that returns a license badge based on which license is passed in
 // If there is no license, return an empty string
 function renderLicenseBadge(license) {
-  if(license == "") {
-    return "";
-  }
   let badge = licenseDictionary[license];
-  if(badge == "N/A") {
+  if(badge == "N/A" || badge == "Repo") {
       return "";
   }
-  return `![License](https://img.shields.io/badge/license-${badge}-green)`;
+  return `
+![License](https://img.shields.io/badge/license-${badge}-green)`;
 }
 
 // TODO: Create a function that returns the license link
 // If there is no license, return an empty string
 function renderLicenseLink(license) {
-  if(license == "") {
-    return "";
-  }
   let link = licenseDictionary[license];
-  if(link == "N/A") {
-      return "";
+  if(link == "N/A" || link == "Repo") {
+    return "";
   }
   return `https://opensource.org/licenses/${link}`;
 }
@@ -66,16 +62,28 @@ function renderLicenseLink(license) {
 // TODO: Create a function that returns the license section of README
 // If there is no license, return an empty string
 function renderLicenseSection(license) {
-  let shorthand = licenseDictionary.license;
-  if(shorthand == "N/A") {
-    return "\n";
+  // let shorthand = licenseDictionary[license];
+  // console.log(`shorthand is ${shorthand}`);
+  if(license == "No License") {
+    return "";
   }
+
   let markdown = generateMarkdown("License");
-  let link = renderLicenseLink(shorthand);
+  if(license == "License is in Project Repo") {
+    return `
+${markdown}
+
+Please refer to the license in the repo
+`;
+  }
+
+  let link = renderLicenseLink(license);
   return `
 ${markdown}
+
+Covered under the ${license} license
 License Link: ${link}
-  `;
+`;
 }
 
 // TODO: Create a function to generate markdown for README
@@ -83,4 +91,4 @@ function generateMarkdown(data) {
   return `## ${data}`;
 }
 
-module.exports = generateMarkdown.js;
+module.exports = {generateMarkdown, renderLicenseSection, renderLicenseLink, renderLicenseBadge};

@@ -1,30 +1,46 @@
 // TODO: Include packages needed for this application
 const fs = require("fs");
 const inquirer = require("inquirer");
-const generateMarkdown = require("./utils/generateMarkdown.js");
+const {generateMarkdown, renderLicenseSection, renderLicenseLink, renderLicenseBadge} = require("./utils/generateMarkdown.js");
 
 // TODO: Create an array of questions for user input
 const questions = [
     "What is your project's name?",
     "Enter a project description.",
-    "Enter installation instructions (Enter N/A or None if there are none).",
-    "Enter usage instructions (Enter N/A or None if there are none).",
-    "Enter any credits (Enter N/A or None if there are none).",
+    "Enter installation instructions (Enter N/A if there are none).",
+    "Enter usage instructions (Enter N/A if there are none).",
+    "Enter any credits (Enter N/A if there are none).",
     "Enter your license.",
-    "Enter contribution guidelines (Enter N/A or None if there are none).",
-    "Enter testing instructions (Enter N/A or None if there are none).",
+    "Enter contribution guidelines (Enter N/A if there are none).",
+    "Enter testing instructions (Enter N/A if there are none).",
     "What is your Github username?",
     "What is your email?",
 ];
 
 // TODO: Create a function to write README file
 function writeToFile(fileName, data) {
-    console.log(data.license);
-    let badge = generateMarkdown.renderLicenseBadge(data.license);
-    let licenseText = generateMarkdown.renderLicenseSection(data.license);
+    let badge = renderLicenseBadge(data.license);
+    let licenseText = renderLicenseSection(data.license);
+
+    let tableOfContents = `- [Installation](#installation)
+- [Usage](#usage)
+- [Credits](#credits)
+- [License](#license)
+- [How to Contribute](#how-to-contribute)
+- [Tests](#tests)
+- [Questions](#questions)`;
+
+    if(data.license == "No License") {
+        tableOfContents = `- [Installation](#installation)
+- [Usage](#usage)
+- [Credits](#credits)
+- [How to Contribute](#how-to-contribute)
+- [Tests](#tests)
+- [Questions](#questions)`;
+    }
+
     fs.writeFile(`${fileName}-README.md`,
-`# ${fileName}
-${badge}
+`# ${fileName}${badge}
     
 ## Description
     
@@ -32,10 +48,7 @@ ${data.description}
 
 ## Table of Contents
 
-- [Installation](#installation)
-- [Usage](#usage)
-- [Credits](#credits)
-- [License](#license)
+${tableOfContents}
 
 ## Installation
 
@@ -100,6 +113,7 @@ function init() {
                 message: questions[5],
                 choices: [
                     "No License",
+                    "License is in Project Repo",
                     "Academic Free License v3.0",
                     "Apache license 2.0",
                     "Artistic license 2.0",
@@ -158,7 +172,6 @@ function init() {
             },
         ])
         .then((answers) => {
-            console.log(answers);
             writeToFile(answers.name, answers);
         })
 }
