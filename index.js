@@ -5,53 +5,63 @@ const generateMarkdown = require("./utils/generateMarkdown.js");
 
 // TODO: Create an array of questions for user input
 const questions = [
-    "What is your project's name?", // 0
-    "Enter a project description.", // 1
-    "Enter installation instructions.", // 2
-    "Enter usage instructions.", // 3
-    "Enter any credits.", // 4
-    "Enter your license.", // 5
-    "Enter contribution guidelines.", // 6
-    "Enter testing instructions." // 7
+    "What is your project's name?",
+    "Enter a project description.",
+    "Enter installation instructions (Enter N/A or None if there are none).",
+    "Enter usage instructions (Enter N/A or None if there are none).",
+    "Enter any credits (Enter N/A or None if there are none).",
+    "Enter your license.",
+    "Enter contribution guidelines (Enter N/A or None if there are none).",
+    "Enter testing instructions (Enter N/A or None if there are none).",
+    "What is your Github username?",
+    "What is your email?",
 ];
 
 // TODO: Create a function to write README file
 function writeToFile(fileName, data) {
     console.log(data.license);
+    let badge = generateMarkdown.renderLicenseBadge(data.license);
     let licenseText = generateMarkdown.renderLicenseSection(data.license);
-    fs.writeFile(`${fileName}-readme.md`,
-    `# ${fileName}
+    fs.writeFile(`${fileName}-README.md`,
+`# ${fileName}
+${badge}
     
-    ## Description
+## Description
     
-    ${data.description}
+${data.description}
 
-    ## Table of Contents
+## Table of Contents
 
-    - [Installation](#installation)
-    - [Usage](#usage)
-    - [Credits](#credits)
-    - [License](#license)
-    
-    ## Installation
-    
-    ${data.install}
-    
-    ## Usage
-    
-    ${data.usage}
-    
-    ##Credits
-    
-    ${data.credits}  
-    ${licenseText}
-    ## How to Contribute
+- [Installation](#installation)
+- [Usage](#usage)
+- [Credits](#credits)
+- [License](#license)
 
-    ${data.contribute}
+## Installation
 
-    ## Tests
+${data.install}
 
-    ${data.tests}`,
+## Usage
+
+${data.usage}
+
+## Credits
+
+${data.credits}  
+${licenseText}
+## How to Contribute
+
+${data.contribute}
+
+## Tests
+
+${data.tests}
+
+## Questions
+
+My Github Username: https://github.com/${data.github}
+
+My Email: ${data.email}`,
     (err) => err ? console.error(err) : console.log('Success!'))
 }
 
@@ -135,6 +145,16 @@ function init() {
                 input: "input",
                 name: "tests",
                 message: questions[7],
+            },
+            {
+                input: "input",
+                name: "github",
+                message: questions[8],
+            },
+            {
+                input: "input",
+                name: "email",
+                message: questions[9],
             },
         ])
         .then((answers) => {
